@@ -1,0 +1,53 @@
+<odoo>
+    <data>
+        <record id="paperformat_8_mm" model="report.paperformat">
+            <field name="name">Reporte 80 mm</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+            <field name="page_height">90</field>
+            <field name="page_width">80</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">3</field>
+            <field name="margin_bottom">3</field>
+            <field name="margin_left">3</field>
+            <field name="margin_right">3</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">3</field>
+            <field name="dpi">80</field>
+        </record>
+        <report id="report_close_pdv"
+                string="Reporte de cierre de caja"
+                model="pos.session"
+                report_type="qweb-pdf"
+                name="close_pos_report.report_close_pdv"
+                paperformat="paperformat_8_mm"
+                file="Cierre de caja"
+        />
+            <template id="report_close_pdv">
+                    <t t-call="web.html_container">
+                        <t t-foreach="docs" t-as="o">
+                                <div class="page">
+                                    <p>Fecha de apertura: <span t-field="o.stop_at"/><br/></p>
+                                    <p>Fecha de cierre: <span t-field="o.stop_at"/><br/></p>
+                                    <p>Sesión: <span t-field="o.name"/><br/></p>
+                                    <p>Usuario: <span t-field="o.user_id"/><br/></p>
+                                    <p>Cobros total: <span t-field="o.total_payments_amount" t-options='{"widget": "float", "precision": 2}'/><br/></p>
+                                    <t t-set="total_tarjeta" t-value="0"/>
+                                    <t t-set="total_efectivo" t-value="0"/>
+                                    <t t-set="total_devoluciones" t-value="0"/>
+                                    <t t-foreach="o.order_ids" t-as="s">
+                                        <t t-foreach="s.payment_ids" t-as="p">
+                                            <t t-if="p.payment_method_id.name=='Efectivo' and p.amount &gt; 0"> <t t-set="total_efectivo" t-value="total_efectivo + p.amount" /></t>
+                                            <t t-if="p.payment_method_id.name=='Teminal' and p.amount &gt; 0"> <t t-set="total_tarjeta" t-value="total_tarjeta + p.amount"/></t>
+                                            <t t-if="p.amount &lt; 0"><t t-set="total_devoluciones" t-value="total_devoluciones + p.amount"/></t>
+                                        </t>
+                                    </t>
+                                    <p>Pagos con efectivo: <t t-esc="total_efectivo" t-options='{"widget": "float", "precision": 2}'/>  </p>
+                                    <p>Pagos con tarjeta: <t t-esc="total_tarjeta" t-options='{"widget": "float", "precision": 2}'/> </p>
+                                    <p>Devoluciones: <t t-esc="total_devoluciones" t-options='{"widget": "float", "precision": 2}'/> </p>
+                                </div>
+                        </t>
+                    </t>
+                </template>
+    </data>
+</odoo>
