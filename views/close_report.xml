@@ -32,7 +32,7 @@
                                     <p>Fecha de cierre: <span t-field="o.stop_at"/><br/></p>
                                     <p>Sesión: <span t-field="o.name"/><br/></p>
                                     <p>Usuario: <span t-field="o.user_id"/><br/></p>
-                                    <p>Cobros total: <span t-field="o.total_payments_amount" t-options='{"widget": "float", "precision": 2}'/><br/></p>
+                                    <p>Venta total - devoluciones: <span t-field="o.total_payments_amount" t-options='{"widget": "float", "precision": 2}'/><br/></p>
                                     <t t-set="total_tarjeta" t-value="0"/>
                                     <t t-set="total_efectivo" t-value="0"/>
                                     <t t-set="total_devoluciones" t-value="0"/>
