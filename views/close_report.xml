@@ -1,12 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="paperformat_8_mm" model="report.paperformat">
+        <record id="paperformat_80_mm" model="report.paperformat">
             <field name="name">Reporte 80 mm</field>
-            <field name="default" eval="True"/>
+            <field name="default" eval="False" />
             <field name="format">custom</field>
+            <field name="orientation">Portrait</field>
             <field name="page_height">90</field>
             <field name="page_width">80</field>
-            <field name="orientation">Portrait</field>
             <field name="margin_top">3</field>
             <field name="margin_bottom">3</field>
             <field name="margin_left">3</field>
@@ -20,7 +21,7 @@
                 model="pos.session"
                 report_type="qweb-pdf"
                 name="close_pos_report.report_close_pdv"
-                paperformat="paperformat_8_mm"
+                paperformat="paperformat_80_mm"
                 file="Cierre de caja"
         />
             <template id="report_close_pdv">
@@ -37,10 +38,11 @@
                                     <t t-set="total_devoluciones" t-value="0"/>
                                     <t t-foreach="o.order_ids" t-as="s">
                                         <t t-foreach="s.payment_ids" t-as="p">
-                                            <t t-if="p.payment_method_id.name=='Efectivo' and p.amount &gt; 0"> <t t-set="total_efectivo" t-value="total_efectivo + p.amount" /></t>
-                                            <t t-if="p.payment_method_id.name=='Teminal' and p.amount &gt; 0"> <t t-set="total_tarjeta" t-value="total_tarjeta + p.amount"/></t>
-                                            <t t-if="p.amount &lt; 0"><t t-set="total_devoluciones" t-value="total_devoluciones + p.amount"/></t>
+                                            <t t-if="p.payment_method_id.name=='Efectivo' and 'REEMBOLSO' not in p.pos_order_id.name"> <t t-set="total_efectivo" t-value="total_efectivo + p.amount" /></t>
+                                            <t t-if="p.payment_method_id.name=='Terminal' and p.amount &gt; 0"> <t t-set="total_tarjeta" t-value="total_tarjeta + p.amount"/></t>
+                                            <t t-if="'REEMBOLSO' in p.pos_order_id.name"><t t-set="total_devoluciones" t-value="total_devoluciones + p.amount"/></t>
                                         </t>
+
                                     </t>
                                     <p>Pagos con efectivo: <t t-esc="total_efectivo" t-options='{"widget": "float", "precision": 2}'/>  </p>
                                     <p>Pagos con tarjeta: <t t-esc="total_tarjeta" t-options='{"widget": "float", "precision": 2}'/> </p>
@@ -48,6 +50,6 @@
                                 </div>
                         </t>
                     </t>
-                </template>
+            </template>
     </data>
 </odoo>
